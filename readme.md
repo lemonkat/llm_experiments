@@ -14,10 +14,10 @@ The recall algorithm picks the top 10 memories with the highest score, and passe
 
 For example, take the following conversation between me and a video game character, called Raiden (from Genshin Impact). In-lore, Raiden cannot cook, and this fact is represented in one of her persona's memories. When I ask Raiden whether or not she can cook, the recall algorithm pulls up the relevant memory, and informs GPT-4 to respond that she cannot cook. This all works despite the Raiden persona storing over 50 large memories.
 
-```
-LemonKat: can you cook?
-Raiden: I do not possess culinary skills. My focus lies elsewhere, in the governance of Inazuma and the pursuit of eternity. However, I am intrigued by the art of dessert making and its required patience.
-```
+>```
+>LemonKat: can you cook?  
+>Raiden: I do not possess culinary skills. My focus lies elsewhere, in the governance of Inazuma and the pursuit of eternity. However, I am intrigued by the art of dessert making and its required patience.
+>```
 
 #### To run:
 1. create a `.env` file with `OPENAI_API_KEY` set to your OpenAI API key.
