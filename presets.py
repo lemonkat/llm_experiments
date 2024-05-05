@@ -4,11 +4,12 @@ import json
 from bs4 import BeautifulSoup as Soup
 
 import util
-from client import OpenAIClient, IOClient
-from persona import Persona, run_conv
+from client import OpenAIClient
+from persona import Persona
 
 DATA_PATH = "data.json"
 PRESET_DATA = {}
+
 
 def get_text(url: str) -> list[str]:
     html = requests.get(url).text
@@ -16,7 +17,7 @@ def get_text(url: str) -> list[str]:
 
     # kill all script and style elements
     for script in soup(["script", "style"]):
-        script.extract()    # rip it out
+        script.extract()  # rip it out
 
     # get text
     text = soup.get_text()
@@ -26,39 +27,52 @@ def get_text(url: str) -> list[str]:
     # break multi-headlines into a line each
     chunks = (phrase.strip() for line in lines for phrase in line.split("  "))
     # drop blank lines
-    text = '\n'.join(chunk for chunk in chunks if chunk and any(p in chunk for p in ".,!?:;-"))
+    text = "\n".join(
+        chunk for chunk in chunks if chunk and any(p in chunk for p in ".,!?:;-")
+    )
     return text
+
 
 def save_data():
     global PRESET_DATA
     with open(DATA_PATH, "w") as file:
         json.dump(PRESET_DATA, file, indent=4)
-    
+
 
 def load_data():
     global PRESET_DATA
     with open(DATA_PATH, "r") as file:
-       PRESET_DATA = json.load(file)
+        PRESET_DATA = json.load(file)
 
 
-def save_persona(identifier: str, name: str, desc: list[str], ex: list[str], inst: list[str], temp: float) -> None:
+def save_persona(
+    identifier: str,
+    name: str,
+    desc: list[str],
+    ex: list[str],
+    inst: list[str],
+    temp: float,
+) -> None:
     PRESET_DATA[identifier] = name, desc, ex, inst, temp
+
 
 def load_persona(identifier: str) -> Persona:
     if identifier == "GPT":
         return OpenAIClient()
-    
+
     if identifier == "None":
         return None
-    
+
     if identifier not in PRESET_DATA:
         raise NameError(f"persona {identifier} not found")
-    
+
     name, desc, ex, inst, temp = PRESET_DATA[identifier]
     return Persona(name, list(set(desc)), inst, list(set(ex)), temp)
-            
 
-def get_desc_from_wiki(name: str, urls: str | list[str],  model: str = util.GPT3) -> list[str]:
+
+def get_desc_from_wiki(
+    name: str, urls: str | list[str], model: str = util.GPT3
+) -> list[str]:
     if isinstance(urls, str):
         urls = [urls]
 
@@ -76,14 +90,18 @@ Text:
 {get_text(url)}"""
         desc.extend(util.call_LLM(prompt, model).splitlines())
     return desc
+
+
 #     prompt = f"""This is a list of statements about {name}.
 # Remove any redundant statements.
-# Place each statement on a seperate line, with no numbering or other prefixes. 
+# Place each statement on a seperate line, with no numbering or other prefixes.
 # {util.jlines(desc)}"""
 #     return list(set(util.call_LLM(prompt, model).splitlines()))
-    
 
-def get_quotes_from_wiki(name: str, urls: str | list[str], model: str = util.GPT3) -> list[str]:
+
+def get_quotes_from_wiki(
+    name: str, urls: str | list[str], model: str = util.GPT3
+) -> list[str]:
     if isinstance(urls, str):
         urls = [urls]
 
@@ -98,8 +116,9 @@ if no quotes can be found on this page, return NONE.
         response = util.call_LLM(prompt, model)
         if response.lower() != "none":
             quotes.extend(response.splitlines())
-    
+
     return quotes
+
 
 def get_tone(name: str, quotes: list[str], model: str = util.GPT3) -> str:
     prompt = f"""Here are some of {name}'s quotes:
@@ -108,11 +127,15 @@ In one word, describe the tone / style of these quotes.
 Do not explain anything, returning only that single word."""
     return util.call_LLM(prompt, model).strip().lower()
 
+
 if __name__ == "__main__":
-
     load_data()
+    # from persona import run_conv
+    # from client import IOClient
 
-    data = [ # a couple characters from Genshin Impact
+    # for _ in run_conv([IOClient("LemonKat"), load_persona("genshin:Raiden")]):
+    #     pass
+    data = [  # a couple characters from Genshin Impact
         ("Beidou", "genshin:Beidou", "Beidou"),
         ("Venti", "genshin:Venti", "Venti"),
         ("Zhongli", "genshin:Zhongli", "Zhongli"),
@@ -145,4 +168,3 @@ if __name__ == "__main__":
         )
         save_data()
         print(f"saved {name}")
-    
