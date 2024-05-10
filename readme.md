@@ -1,6 +1,8 @@
-### LemonKat's LLM experiments on emulating social interactions and character memories
+LemonKat's LLM experiments
 
-These are a couple experiments using GPT-3 and GPT-4 to emulate conversations between fictional characters.
+These are a couple experiments using GPT-3 and GPT-4’s APIs to emulate conversations between fictional characters using multiple LLM agents with associated character memories. 
+
+I created a wrapper function so the actual LLM can be swapped out to test the responses of multiple commercial and open-source LLMs.
 
 Inspired by the paper [_Generative Agents: Interactive Simulacra of Human Behavior_](https://arxiv.org/abs/2304.03442).
 
@@ -18,6 +20,6 @@ For example, take the following conversation between me and a video game charact
 > LemonKat: can you cook?  
 > Raiden: I do not possess culinary skills. My focus lies elsewhere, in the governance of Inazuma and the pursuit of eternity. However, I am intrigued by the art of dessert making and its required patience.
 
-#### To run:
+To run:
 1. create a `.env` file with `OPENAI_API_KEY` set to your OpenAI API key.
 2. run `python3 main.py`
